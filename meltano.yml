@@ -1,0 +1,32 @@
+version: 1
+send_anonymous_usage_stats: false
+project_id: "tap-hubspot"
+default_environment: dev
+environments:
+  - name: dev
+plugins:
+  extractors:
+    - name: "tap-hubspot"
+      namespace: "tap_hubspot"
+      pip_url: -e .
+      capabilities:
+        - state
+        - catalog
+        - discover
+        - about
+        - stream-maps
+      config:
+        start_date: "2012-01-01T00:00:00Z"
+        api_base_url: "http://api.hubapi.com"
+      settings:
+        - name: access_token
+          kind: password
+          sensitive: true
+        - name: api_base_url
+          kind: string
+        - name: start_date
+
+  loaders:
+    - name: target-jsonl
+      variant: andyh1203
+      pip_url: target-jsonl
