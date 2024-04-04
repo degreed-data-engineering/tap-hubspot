@@ -11,6 +11,7 @@
 """
 
 from __future__ import annotations
+from typing import Any, Iterable
 
 from singer_sdk import typing as th
 from tap_hubspot.client import HubSpotStream
@@ -39,5 +40,14 @@ class EamilCampaignsStream(HubSpotStream):
         th.Property("appName", th.StringType),
     ).to_dict()
 
-    def get_child_context(self, record: dict, context: dict | None) -> dict | None:
-        return {"campaign_id": record["id"], "app_id": record["appId"]}
+    # def get_child_context(self, record: dict, context: dict | None) -> dict | None:
+    #     return {"campaign_id": record["id"], "app_id": record["appId"]}
+    collected_contexts = []
+
+    def get_records(self, context: dict | None) -> Iterable[dict[str, Any]]:
+        for record in super().get_records(context):
+            # Collect context variables from each record
+            self.collected_contexts.append(
+                {"campaign_id": record["id"], "app_id": record["appId"]}
+            )
+            yield record
