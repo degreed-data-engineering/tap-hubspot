@@ -28,7 +28,6 @@ class EamilCampaignsStream(HubSpotStream):
     name = "email_campaigns"
     path = f"/email/public/{API_VERSION}/campaigns"
     primary_keys = ["id"]
-    replication_key = None
 
     records_jsonpath = "$.campaigns[:]"
 
@@ -40,14 +39,11 @@ class EamilCampaignsStream(HubSpotStream):
         th.Property("appName", th.StringType),
     ).to_dict()
 
-    # def get_child_context(self, record: dict, context: dict | None) -> dict | None:
-    #     return {"campaign_id": record["id"], "app_id": record["appId"]}
-    collected_contexts = []
+    campaign_id_contexts = []
 
     def get_records(self, context: dict | None) -> Iterable[dict[str, Any]]:
         for record in super().get_records(context):
-            # Collect context variables from each record
-            self.collected_contexts.append(
+            self.campaign_id_contexts.append(
                 {"campaign_id": record["id"], "app_id": record["appId"]}
             )
             yield record

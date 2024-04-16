@@ -50,10 +50,10 @@ class TapHubSpot(Tap):
             A list of discovered streams.
         """
         return [
-            # streams.EamilCampaignsStream(self),
+            streams.EamilCampaignsStream(self),
             streams.EamilCampaignDetailsStream(self),
-            # streams.EmailEventsStream(self),
-            # streams.EmailSubscriptionsStream(self),
+            streams.EmailEventsStream(self),
+            streams.EmailSubscriptionsStream(self),
         ]
 
     def load_streams(self) -> list[Stream]:
