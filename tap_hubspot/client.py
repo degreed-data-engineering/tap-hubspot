@@ -97,6 +97,7 @@ class HubSpotStream(RESTStream):
             A dictionary of URL query parameters.
         """
         params: dict = {}
+        params["limit"] = 1000
         if next_page_token:
             params["offset"] = next_page_token.path
         if self.replication_key:

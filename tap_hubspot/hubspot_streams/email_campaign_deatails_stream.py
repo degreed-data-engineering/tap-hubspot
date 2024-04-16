@@ -11,9 +11,11 @@
 
 from __future__ import annotations
 
+import asyncio
+from typing import Any, Iterable
 from singer_sdk import typing as th
-
 from tap_hubspot.client import HubSpotStream
+from concurrent.futures import ThreadPoolExecutor
 from tap_hubspot.hubspot_streams.email_campaigns_stream import EamilCampaignsStream
 
 
@@ -26,11 +28,9 @@ class EamilCampaignDetailsStream(HubSpotStream):
     """
 
     name = "email_campaign_details"
-    parent_stream_type = EamilCampaignsStream
     path = f"/email/public/{API_VERSION}" + "/campaigns/{campaign_id}"
 
     primary_keys = ["id"]
-    replication_key = None
 
     schema = th.PropertiesList(
         th.Property(
@@ -161,3 +161,31 @@ class EamilCampaignDetailsStream(HubSpotStream):
             description="Type of the campaign (e.g., AB_EMAIL).",
         ),
     ).to_dict()
+
+    def get_url(self, context: dict | None) -> str:
+        campaign_id = context["campaign_id"]
+        return f"{self.url_base}/email/public/{API_VERSION}/campaigns/{campaign_id}"
+
+    def fetch_data(self, item):
+        return super().get_records(item)
+
+    async def process_in_parallel(self, ctx):
+        results = []
+        sublists = [ctx[i : i + 1000] for i in range(0, len(ctx), 1000)]
+        with ThreadPoolExecutor() as executor:
+            for sublist in sublists:
+                tasks = [
+                    asyncio.get_event_loop().run_in_executor(
+                        executor, self.fetch_data, item
+                    )
+                    for item in sublist
+                ]
+                result = await asyncio.gather(*tasks)
+                results.extend(result)
+        return results
+
+    def get_records(self, context: dict | None) -> Iterable[dict[str, Any]]:
+        custom_contexts = EamilCampaignsStream.campaign_id_contexts
+        result = asyncio.run(self.process_in_parallel(custom_contexts))
+        for i in [list(k)[0] for k in result]:
+            yield i
