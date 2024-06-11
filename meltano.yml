@@ -20,10 +20,10 @@ plugins:
         api_base_url: "http://api.hubapi.com"
         campaigns_limit: 1
         email_events_limit: 10
-        # email_events_start_timestamp: 1718044140000
-        # email_events_end_timestamp: 1718044200000
-        # email_events_type: PROCESSED
-        # email_events_exclude_filtered_events: True
+        email_events_start_timestamp: 1718044140000
+        email_events_end_timestamp: 1718044200000
+        email_events_type: PROCESSED
+        email_events_exclude_filtered_events: True
       settings:
         - name: access_token
           kind: password
