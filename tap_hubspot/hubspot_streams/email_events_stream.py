@@ -11,8 +11,8 @@
 
 from __future__ import annotations
 
+from typing import Any, Iterable
 from singer_sdk import typing as th
-
 from tap_hubspot.client import HubSpotStream
 from tap_hubspot.hubspot_streams.email_campaign_deatails_stream import (
     EamilCampaignsStream,
@@ -117,6 +117,34 @@ class EmailEventsStream(HubSpotStream):
             description="HubSpot email campaign group ID associated with the email event.",
         ),
     ).to_dict()
+
+    def get_url(self, context: dict | None) -> str:
+        url = super().get_url(context)
+
+        start_timestamp = self.config.get("email_events_start_timestamp", None)
+        end_timesamp = self.config.get("email_events_end_timestamp", None)
+        event_types = self.config.get("email_events_type", None)
+        filtered_events = self.config.get("email_events_exclude_filtered_events", False)
+
+        if start_timestamp:
+            url = f"{url}&startTimestamp={start_timestamp}"
+        if end_timesamp:
+            url = f"{url}&endTimestamp={end_timesamp}"
+        if event_types:
+            url = f"{url}&eventType={event_types}"
+        if filtered_events:
+            url = f"{url}&excludeFilteredEvents=true"
+        return url
+
+    def get_records(self, context: dict | None) -> Iterable[dict[str, Any]]:
+        records = super().get_records(context)
+        email_events_limit = self.config.get("email_events_limit", -1)
+        record_count = 0
+        for record in records:
+            if record_count != -1 and email_events_limit == record_count:
+                break
+            record_count += 1
+            yield record
 
     def get_child_context(self, record: dict, context: dict | None) -> dict | None:
         return {"recipient_email_id": record["recipient"]}
