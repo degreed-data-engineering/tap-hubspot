@@ -33,7 +33,7 @@ class EmailEventsStream(HubSpotStream):
         + "/events?campaignId={campaign_id}&appId={app_id}"
     )
     primary_keys = ["id", "created"]
-    replication_key = None
+    replication_key = "created"
     parent_stream_type = EamilCampaignsStream
     records_jsonpath = "$.events[:]"
 
@@ -126,7 +126,10 @@ class EmailEventsStream(HubSpotStream):
         event_types = self.config.get("email_events_type", None)
         filtered_events = self.config.get("email_events_exclude_filtered_events", False)
 
-        if start_timestamp:
+        replication_key_value = self.stream_state.get("replication_key_value", None)
+        if self.replication_key and replication_key_value:
+            url = f"{url}&startTimestamp={replication_key_value}"
+        elif start_timestamp:
             url = f"{url}&startTimestamp={start_timestamp}"
         if end_timesamp:
             url = f"{url}&endTimestamp={end_timesamp}"

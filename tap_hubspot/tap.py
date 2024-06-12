@@ -79,7 +79,7 @@ class TapHubSpot(Tap):
             streams.EamilCampaignsStream(self),
             streams.EamilCampaignDetailsStream(self),
             streams.EmailEventsStream(self),
-            # streams.EmailSubscriptionsStream(self),
+            streams.EmailSubscriptionsStream(self),
         ]
 
 

@@ -99,9 +99,6 @@ class HubSpotStream(RESTStream):
         params: dict = {}
         if next_page_token:
             params["offset"] = next_page_token.path
-        if self.replication_key:
-            params["sort"] = "asc"
-            params["order_by"] = self.replication_key
         return params
 
     def prepare_request_payload(
