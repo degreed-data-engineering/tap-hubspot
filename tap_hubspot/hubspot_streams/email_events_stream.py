@@ -30,11 +30,13 @@ class EmailEventsStream(HubSpotStream):
     name = "email_events"
     path = (
         f"/email/public/{API_VERSION}"
-        + "/events?campaignId={campaign_id}&appId={app_id}"
+        + "/events?campaignId={campaign_id}&appId={app_id}&limit=1000"
     )
     primary_keys = ["id", "created"]
     replication_key = "created"
     parent_stream_type = EamilCampaignsStream
+    state_partitioning_keys = []
+
     records_jsonpath = "$.events[:]"
 
     sent_by_schema = th.ObjectType(
@@ -127,16 +129,23 @@ class EmailEventsStream(HubSpotStream):
         filtered_events = self.config.get("email_events_exclude_filtered_events", False)
 
         replication_key_value = self.stream_state.get("replication_key_value", None)
+
         if self.replication_key and replication_key_value:
             url = f"{url}&startTimestamp={replication_key_value}"
         elif start_timestamp:
             url = f"{url}&startTimestamp={start_timestamp}"
+
         if end_timesamp:
             url = f"{url}&endTimestamp={end_timesamp}"
+
         if event_types:
             url = f"{url}&eventType={event_types}"
+
         if filtered_events:
             url = f"{url}&excludeFilteredEvents=true"
+
+        self.logger.info(f"Hubspot API URL - {url}")
+
         return url
 
     def get_records(self, context: dict | None) -> Iterable[dict[str, Any]]:

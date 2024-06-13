@@ -31,6 +31,7 @@ class EamilCampaignDetailsStream(HubSpotStream):
 
     primary_keys = ["id"]
     replication_key = None
+    state_partitioning_keys = []
 
     schema = th.PropertiesList(
         th.Property(

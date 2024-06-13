@@ -30,6 +30,8 @@ class EmailSubscriptionsStream(HubSpotStream):
     path = f"/email/public/{API_VERSION}" + "/subscriptions/{recipient_email_id}"
     parent_stream_type = EmailEventsStream
     primary_keys = ["email"]
+    state_partitioning_keys = []
+
     records_jsonpath = "$[*]"
 
     from singer_sdk import typing as th

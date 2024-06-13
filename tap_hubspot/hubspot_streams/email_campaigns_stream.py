@@ -30,6 +30,7 @@ class EamilCampaignsStream(HubSpotStream):
     path = f"/email/public/{API_VERSION}/campaigns?limit=1000"
     primary_keys = ["id"]
     replication_key = None
+    state_partitioning_keys = []
 
     records_jsonpath = "$.campaigns[:]"
 
