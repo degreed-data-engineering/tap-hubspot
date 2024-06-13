@@ -1,7 +1,7 @@
 """
     A specialized class for interacting with the HubSpot REST API, inheriting from Meltano RESTStream.
 
-    This class is designed to facilitate interaction with the Grafana REST API, leveraging
+    This class is designed to facilitate interaction with the Hubspot REST API, leveraging
     the functionality provided by the `RESTStream` base class. 
 
 """
@@ -13,7 +13,7 @@ import requests
 from typing import Any, Callable, Iterable
 from singer_sdk.authenticators import BearerTokenAuthenticator
 from singer_sdk.helpers.jsonpath import extract_jsonpath
-from singer_sdk.pagination import BaseAPIPaginator, BaseHATEOASPaginator  # noqa: TCH002
+from singer_sdk.pagination import BaseAPIPaginator, BaseHATEOASPaginator
 from singer_sdk.streams import RESTStream
 
 
@@ -38,7 +38,7 @@ class HubSpotStream(RESTStream):
     records_jsonpath = "$[*]"
 
     # Set this value or override `get_new_paginator`.
-    next_page_token_jsonpath = "$.next_page"  # noqa: S105
+    next_page_token_jsonpath = "$.next_page"
 
     @property
     def authenticator(self) -> BearerTokenAuthenticator:
@@ -63,7 +63,7 @@ class HubSpotStream(RESTStream):
         if "user_agent" in self.config:
             headers["User-Agent"] = self.config.get("user_agent")
         # If not using an authenticator, you may also provide inline auth headers:
-        # headers["Private-Token"] = self.config.get("auth_token")  # noqa: ERA001
+        # headers["Private-Token"] = self.config.get("auth_token")
         return headers
 
     def get_new_paginator(self) -> BaseAPIPaginator:
@@ -84,8 +84,8 @@ class HubSpotStream(RESTStream):
 
     def get_url_params(
         self,
-        context: dict | None,  # noqa: ARG002
-        next_page_token: Any | None,  # noqa: ANN401
+        context: dict | None,
+        next_page_token: Any | None,
     ) -> dict[str, Any]:
         """Return a dictionary of values to be used in URL parameterization.
 
@@ -103,8 +103,8 @@ class HubSpotStream(RESTStream):
 
     def prepare_request_payload(
         self,
-        context: dict | None,  # noqa: ARG002
-        next_page_token: Any | None,  # noqa: ARG002, ANN401
+        context: dict | None,
+        next_page_token: Any | None,
     ) -> dict | None:
         """Prepare the data payload for the REST API request.
 
@@ -135,7 +135,7 @@ class HubSpotStream(RESTStream):
     def post_process(
         self,
         row: dict,
-        context: dict | None = None,  # noqa: ARG002
+        context: dict | None = None,
     ) -> dict | None:
         """As needed, append or transform raw data to match expected structure.
 
