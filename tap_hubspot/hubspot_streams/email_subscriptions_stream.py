@@ -34,8 +34,6 @@ class EmailSubscriptionsStream(HubSpotStream):
 
     records_jsonpath = "$[*]"
 
-    from singer_sdk import typing as th
-
     subscription_status_schema = th.ObjectType(
         th.Property(
             "id",

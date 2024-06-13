@@ -1,1 +1,1 @@
-"""All Grafana OnCall streams are defined in this module"""
+#!/usr/bin/env python3
