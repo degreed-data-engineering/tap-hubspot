@@ -31,15 +31,42 @@ class TapHubSpot(Tap):
             description="The token to authenticate against the API service",
         ),
         th.Property(
-            "start_date",
-            th.DateTimeType,
-            description="The earliest record date to sync",
-        ),
-        th.Property(
             "api_base_url",
             th.StringType,
             default="http://api.hubapi.com",
             description="The base url for the API service",
+        ),
+        th.Property(
+            "campaigns_limit",
+            th.IntegerType,
+            default=-1,
+            description="Used to limit how many records to be returned. -1 to get all records",
+        ),
+        th.Property(
+            "email_events_limit",
+            th.IntegerType,
+            default=-1,
+            description="Used to limit how many records to be returned. -1 to get all records",
+        ),
+        th.Property(
+            "email_events_start_timestamp",
+            th.IntegerType,
+            description="Only return events which occurred at or after the given timestamp (in milliseconds since epoch)",
+        ),
+        th.Property(
+            "email_events_end_timestamp",
+            th.IntegerType,
+            description="Only return events which occurred at or before the given timestamp (in milliseconds since epoch)",
+        ),
+        th.Property(
+            "email_events_type",
+            th.StringType,
+            description="Only return events of the specified type (case-sensitive)",
+        ),
+        th.Property(
+            "email_events_exclude_filtered_events",
+            th.BooleanType,
+            description="Only return events that have not been filtered out due to customer filtering settings. The default value is false",
         ),
     ).to_dict()
 

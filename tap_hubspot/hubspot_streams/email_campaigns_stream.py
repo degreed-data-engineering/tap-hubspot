@@ -26,7 +26,7 @@ class EamilCampaignsStream(HubSpotStream):
     """
 
     name = "email_campaigns"
-    path = f"/email/public/{API_VERSION}/campaigns"
+    path = f"/email/public/{API_VERSION}/campaigns?limit=1000"
     primary_keys = ["id"]
 
     records_jsonpath = "$.campaigns[:]"
@@ -42,7 +42,12 @@ class EamilCampaignsStream(HubSpotStream):
     campaign_id_contexts = []
 
     def get_records(self, context: dict | None) -> Iterable[dict[str, Any]]:
+        campaigns_limit = self.config.get("campaigns_limit", -1)
+        record_count = 0
         for record in super().get_records(context):
+            if record_count != -1 and campaigns_limit == record_count:
+                break
+            record_count += 1
             self.campaign_id_contexts.append(
                 {"campaign_id": record["id"], "app_id": record["appId"]}
             )

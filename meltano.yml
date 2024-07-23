@@ -1,13 +1,13 @@
 version: 1
 send_anonymous_usage_stats: false
-project_id: "tap-hubspot"
+project_id: tap-hubspot
 default_environment: dev
 environments:
   - name: dev
 plugins:
   extractors:
-    - name: "tap-hubspot"
-      namespace: "tap_hubspot"
+    - name: tap-hubspot
+      namespace: tap_hubspot
       pip_url: -e .
       capabilities:
         - state
@@ -15,17 +15,46 @@ plugins:
         - discover
         - about
         - stream-maps
-      config:
-        start_date: "2012-01-01T00:00:00Z"
-        api_base_url: "https://api.hubapi.com"
-        batch_size: 1000
       settings:
         - name: access_token
           kind: password
           sensitive: true
         - name: api_base_url
           kind: string
-        - name: start_date
+        - name: campaigns_limit
+          kind: integer
+          value: -1
+          description:
+            Used to debug the extractor by limiting the number of campaign
+            ids. Not used in prod.
+        - name: email_events_limit
+          kind: integer
+          value: -1
+          description:
+            Used to debug the extractor by limiting the number of campaign
+            email events. Not used in prod.
+        - name: email_events_start_timestamp
+          kind: integer
+          description: |
+            Only return events which occurred at or after the given timestamp (in milliseconds since epoch). 
+            After the initial run, this setting is not applicable in real-time runs if Meltano state is used.
+            Can be used to load past date's data in combination with email_events_end_timestamp (Use different Meltano state id  from prod to run against past dates).
+        - name: email_events_end_timestamp
+          kind: integer
+          description: |
+            Only return events which occurred at or before the given timestamp (in milliseconds since epoch).
+            Should be commented in real-time runs. Used only to load past date's data in combination with email_events_start_timestamp.
+        - name: email_events_type
+          kind: string
+          description: Only return events of the specified type (case-sensitive).
+        - name: email_events_exclude_filtered_events
+          kind: boolean
+          description:
+            Only return events that have not been filtered out due to customer
+            filtering settings. The default value is false.
+
+      config:
+        api_base_url: https://api.hubapi.com
 
   loaders:
     - name: target-jsonl

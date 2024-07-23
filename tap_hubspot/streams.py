@@ -33,10 +33,12 @@ promoting code reusability and maintainability.
 """
 
 from tap_hubspot.hubspot_streams.email_campaigns_stream import EamilCampaignsStream
+
 from tap_hubspot.hubspot_streams.email_campaign_deatails_stream import (
     EamilCampaignDetailsStream,
 )
 from tap_hubspot.hubspot_streams.email_events_stream import EmailEventsStream
+
 from tap_hubspot.hubspot_streams.email_subscriptions_stream import (
     EmailSubscriptionsStream,
 )

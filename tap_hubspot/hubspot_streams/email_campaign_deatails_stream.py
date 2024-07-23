@@ -12,10 +12,11 @@
 from __future__ import annotations
 
 import asyncio
+import aiohttp
 from typing import Any, Iterable
 from singer_sdk import typing as th
+from aiohttp import ClientResponseError
 from tap_hubspot.client import HubSpotStream
-from concurrent.futures import ThreadPoolExecutor
 from tap_hubspot.hubspot_streams.email_campaigns_stream import EamilCampaignsStream
 
 
@@ -162,30 +163,44 @@ class EamilCampaignDetailsStream(HubSpotStream):
         ),
     ).to_dict()
 
-    def get_url(self, context: dict | None) -> str:
-        campaign_id = context["campaign_id"]
-        return f"{self.url_base}/email/public/{API_VERSION}/campaigns/{campaign_id}"
+    async def fetch_data(self, session, campaign_detail):
+        url = f"{self.url_base}/email/public/{API_VERSION}/campaigns/{campaign_detail['campaign_id']}"
+        while True:
+            try:
+                async with session.get(url, raise_for_status=True) as response:
+                    return await response.json()
+            except ClientResponseError as e:
+                if e.status == 429:
+                    wait_time = 12  # retry delay in seconds
+                    self.logger.info(f"Rate limit exceeded. Retrying...")
+                    await asyncio.sleep(wait_time)
+                    await self.fetch_data(session, campaign_detail)
 
-    def fetch_data(self, item):
-        return super().get_records(item)
-
-    async def process_in_parallel(self, ctx):
+    async def get_api_response(self, session):
+        campaign_details = EamilCampaignsStream.campaign_id_contexts
         results = []
-        sublists = [ctx[i : i + 1000] for i in range(0, len(ctx), 1000)]
-        with ThreadPoolExecutor() as executor:
-            for sublist in sublists:
-                tasks = [
-                    asyncio.get_event_loop().run_in_executor(
-                        executor, self.fetch_data, item
-                    )
-                    for item in sublist
-                ]
-                result = await asyncio.gather(*tasks)
-                results.extend(result)
+        campign_details_sublists = [
+            campaign_details[i : i + 100] for i in range(0, len(campaign_details), 100)
+        ]
+        for campign_details_sublist in campign_details_sublists:
+            async_tasks = [
+                self.fetch_data(session, campaign_deails)
+                for campaign_deails in campign_details_sublist
+            ]
+            result = await asyncio.gather(*async_tasks)
+            results.extend(result)
         return results
 
     def get_records(self, context: dict | None) -> Iterable[dict[str, Any]]:
-        custom_contexts = EamilCampaignsStream.campaign_id_contexts
-        result = asyncio.run(self.process_in_parallel(custom_contexts))
-        for i in [list(k)[0] for k in result]:
-            yield i
+        loop = asyncio.get_event_loop()
+
+        async def fetch_records():
+            async with aiohttp.ClientSession(
+                headers=self.authenticator.auth_headers
+            ) as session:
+                return await self.get_api_response(session)
+
+        responses = loop.run_until_complete(fetch_records())
+
+        for response in responses:
+            yield response
