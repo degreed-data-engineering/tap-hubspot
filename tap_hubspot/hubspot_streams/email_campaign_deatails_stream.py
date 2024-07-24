@@ -11,8 +11,11 @@
 
 from __future__ import annotations
 
+import asyncio
+import aiohttp
+from typing import Any, Iterable
 from singer_sdk import typing as th
-
+from aiohttp import ClientResponseError
 from tap_hubspot.client import HubSpotStream
 from tap_hubspot.hubspot_streams.email_campaigns_stream import EamilCampaignsStream
 
@@ -26,11 +29,9 @@ class EamilCampaignDetailsStream(HubSpotStream):
     """
 
     name = "email_campaign_details"
-    parent_stream_type = EamilCampaignsStream
     path = f"/email/public/{API_VERSION}" + "/campaigns/{campaign_id}"
 
     primary_keys = ["id"]
-    replication_key = None
 
     schema = th.PropertiesList(
         th.Property(
@@ -161,3 +162,45 @@ class EamilCampaignDetailsStream(HubSpotStream):
             description="Type of the campaign (e.g., AB_EMAIL).",
         ),
     ).to_dict()
+
+    async def fetch_data(self, session, campaign_detail):
+        url = f"{self.url_base}/email/public/{API_VERSION}/campaigns/{campaign_detail['campaign_id']}"
+        while True:
+            try:
+                async with session.get(url, raise_for_status=True) as response:
+                    return await response.json()
+            except ClientResponseError as e:
+                if e.status == 429:
+                    wait_time = 12  # retry delay in seconds
+                    self.logger.info(f"Rate limit exceeded. Retrying...")
+                    await asyncio.sleep(wait_time)
+                    await self.fetch_data(session, campaign_detail)
+
+    async def get_api_response(self, session):
+        campaign_details = EamilCampaignsStream.campaign_id_contexts
+        results = []
+        campign_details_sublists = [
+            campaign_details[i : i + 100] for i in range(0, len(campaign_details), 100)
+        ]
+        for campign_details_sublist in campign_details_sublists:
+            async_tasks = [
+                self.fetch_data(session, campaign_deails)
+                for campaign_deails in campign_details_sublist
+            ]
+            result = await asyncio.gather(*async_tasks)
+            results.extend(result)
+        return results
+
+    def get_records(self, context: dict | None) -> Iterable[dict[str, Any]]:
+        loop = asyncio.get_event_loop()
+
+        async def fetch_records():
+            async with aiohttp.ClientSession(
+                headers=self.authenticator.auth_headers
+            ) as session:
+                return await self.get_api_response(session)
+
+        responses = loop.run_until_complete(fetch_records())
+
+        for response in responses:
+            yield response
