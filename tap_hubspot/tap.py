@@ -83,7 +83,7 @@ class TapHubSpot(Tap):
             streams.EmailSubscriptionsStream(self),
         ]
 
-    def load_streams(self) -> list[Stream]:
+    def load_streams(self) -> list[Stream]: 
         """Load streams from discovery and initialize DAG.
 
         Return the output of `self.discover_streams()` to enumerate

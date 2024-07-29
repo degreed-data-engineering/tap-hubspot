@@ -33,7 +33,7 @@ To add the `tap-hubspot` to an existing Meltano project, follow these steps:
           namespace: tap_hubspot
           pip_url: git+https://github.com/degreed-data-engineering/tap-hubspot
           config:
-            start_date: "2020-03-17T00:00:00Z"
+            start_date: "2020-03-17T00:00:00Z" # this README needs some updates, especially here in the parameters section
             access_token: <Access token for HubSpot API service>
             api_base_url: <Base url for the HubSpot API service>
    ```
@@ -80,9 +80,10 @@ pipx install git+https://github.com/degreed-data-engineering/tap-hubspot.git
 
   - `access_token`: This is your HubSpot access token. 
 
+<!-- updates are needed here below as well -->
 Other configurations are
   - `api_base_url`: Base url for the HubSpot API service. Default value is `http://api.hubapi.com`
-  - `start_date`: Starting point for data extraction from a source
+  - `start_date`: Starting point for data extraction from a source 
 
 You can set this API key in your environment variables:
 
