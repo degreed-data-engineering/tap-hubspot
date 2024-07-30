@@ -122,7 +122,7 @@ Pre-Requisite tor run above command
 
 <!-- ### Source Authentication and Authorization -->
 <!--
-Developer TODO: If your tap requires special access on the source system, or any special authentication requirements, provide those here.
+Developer TODO: If your tap requires special access on the source system, or any special authentication requirements, provide those here. # is this comment still relevant?
 -->
 
 ## Usage
@@ -195,7 +195,7 @@ Examples here are for convenience and to streamline end-to-end orchestration sce
 
 <!--
 Developer TODO:
-Your project comes with a custom `meltano.yml` project file already created. Open the `meltano.yml` and follow any "TODO" items listed in
+Your project comes with a custom `meltano.yml` project file already created. Open the `meltano.yml` and follow any "TODO" items listed in # please check all "TODO" in this repo
 the file.
 -->
 

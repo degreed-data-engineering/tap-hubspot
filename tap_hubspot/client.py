@@ -121,7 +121,7 @@ class HubSpotStream(RESTStream):
         Returns:
             A dictionary with the JSON body for a POST requests.
         """
-        # TODO: Delete this method if no payload is required. (Most REST APIs.)
+        # TODO: Delete this method if no payload is required. (Most REST APIs.) # is this comment still needed? Please check all "TODO" comments in this repo
         return None
 
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
@@ -133,7 +133,7 @@ class HubSpotStream(RESTStream):
         Yields:
             Each record from the source.
         """
-        # TODO: Parse response body and return a set of records.
+        # TODO: Parse response body and return a set of records. # is this comment still relevant?
         yield from extract_jsonpath(self.records_jsonpath, input=response.json())
 
     def post_process(
