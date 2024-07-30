@@ -38,7 +38,7 @@ class HubSpotStream(RESTStream):
     records_jsonpath = "$[*]"
 
     # Set this value or override `get_new_paginator`.
-    next_page_token_jsonpath = "$.next_page"  # noqa: S105
+    next_page_token_jsonpath = "$.next_page"  # noqa: S105 # can you remove noqa?
 
     @property
     def authenticator(self) -> BearerTokenAuthenticator:
@@ -63,7 +63,7 @@ class HubSpotStream(RESTStream):
         if "user_agent" in self.config:
             headers["User-Agent"] = self.config.get("user_agent")
         # If not using an authenticator, you may also provide inline auth headers:
-        # headers["Private-Token"] = self.config.get("auth_token")  # noqa: ERA001
+        # headers["Private-Token"] = self.config.get("auth_token")  # noqa: ERA001 # needs some cleanup, pls remove everything that is not needed
         return headers
 
     def get_new_paginator(self) -> BaseAPIPaginator:
@@ -79,12 +79,12 @@ class HubSpotStream(RESTStream):
         Returns:
             A pagination helper instance.
         """
-        # return super().get_new_paginator()
+        # return super().get_new_paginator() # needs some cleanup, pls remove everything that is not needed
         return HubSpotPaginator()
 
     def get_url_params(
         self,
-        context: dict | None,  # noqa: ARG002
+        context: dict | None,  # noqa: ARG002 # can you remove these noqa comments from this repo?
         next_page_token: Any | None,  # noqa: ANN401
     ) -> dict[str, Any]:
         """Return a dictionary of values to be used in URL parameterization.
@@ -96,7 +96,7 @@ class HubSpotStream(RESTStream):
         Returns:
             A dictionary of URL query parameters.
         """
-        params: dict = {}
+        params: dict = {} # are these params you defined used anywhere?
         params["limit"] = 1000
         if next_page_token:
             params["offset"] = next_page_token.path

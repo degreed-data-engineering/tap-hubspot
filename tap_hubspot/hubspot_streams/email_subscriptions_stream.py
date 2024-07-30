@@ -35,7 +35,7 @@ class EmailSubscriptionsStream(HubSpotStream):
 
     name = "email_subscriptions"
     path = f"/email/public/{API_VERSION}" + "/subscriptions/{recipient_email_id}"
-    # parent_stream_type = EmailEventsStream
+    # parent_stream_type = EmailEventsStream # needs some cleanups here, pls remove anything that is not needed
     primary_keys = ["email"]
     records_jsonpath = "$[*]"
     state_partitioning_keys = ["recipient"]
