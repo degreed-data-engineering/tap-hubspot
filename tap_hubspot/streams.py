@@ -32,7 +32,7 @@ This module ensures that all stream classes are easily accessible and well-organ
 promoting code reusability and maintainability.
 """
 
-from tap_hubspot.hubspot_streams.email_campaigns_stream import EamilCampaignsStream
+from tap_hubspot.hubspot_streams.email_campaigns_stream import EamilCampaignsStream # I see that you are importing the streams here and never use them. Looking at tap-template I see that we usually have a different tap structure. How complicated is to align tap-hubspot to our tap-template? We should try to always build taps with consistency.
 
 from tap_hubspot.hubspot_streams.email_campaign_deatails_stream import (
     EamilCampaignDetailsStream,

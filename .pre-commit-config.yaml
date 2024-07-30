@@ -36,3 +36,5 @@ repos:
   - id: mypy
     additional_dependencies:
     - types-requests
+
+# what is this file? Is it needed?

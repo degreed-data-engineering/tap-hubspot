@@ -7,7 +7,7 @@ from singer_sdk.testing import get_tap_test_class
 from tap_hubspot.tap import TapHubSpot
 
 SAMPLE_CONFIG = {
-    "start_date": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d"),
+    "start_date": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d"), # updates are needed in this file as well
     # TODO: Initialize minimal tap config
 }
 
