@@ -3,17 +3,23 @@ Entry point for a Meltano tap that interacts with the HubSpot REST API using Tap
 
 This script serves as the main entry point for the Meltano tap, leveraging the Tap library to
 parse command-line arguments. It initializes a `HubSpotStream` instance, configured with
-the necessary API URL and headers, and uses it to fetch and manage data from the Grafana REST API.
+the necessary API URL and headers, and uses it to fetch and manage data from the HubSpot REST API.
 """
 
 from __future__ import annotations
 
 from singer_sdk import Tap
 from singer_sdk import typing as th
-from singer_sdk.streams import Stream  # JSON schema typing helpers
+from singer_sdk.streams import Stream
 
-# TODO: Import your custom stream types here:
-from tap_hubspot import streams
+from tap_hubspot.hubspot_streams.email_campaigns_stream import EamilCampaignsStream
+from tap_hubspot.hubspot_streams.email_campaign_deatails_stream import (
+    EamilCampaignDetailsStream,
+)
+from tap_hubspot.hubspot_streams.email_events_stream import EmailEventsStream
+from tap_hubspot.hubspot_streams.email_subscriptions_stream import (
+    EmailSubscriptionsStream,
+)
 
 
 class TapHubSpot(Tap):
@@ -77,10 +83,10 @@ class TapHubSpot(Tap):
             A list of discovered streams.
         """
         return [
-            streams.EamilCampaignsStream(self),
-            streams.EamilCampaignDetailsStream(self),
-            streams.EmailEventsStream(self),
-            streams.EmailSubscriptionsStream(self),
+            EamilCampaignsStream(self),
+            EamilCampaignDetailsStream(self),
+            EmailEventsStream(self),
+            EmailSubscriptionsStream(self),
         ]
 
     def load_streams(self) -> list[Stream]:

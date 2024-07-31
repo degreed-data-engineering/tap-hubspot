@@ -7,8 +7,9 @@ from singer_sdk.testing import get_tap_test_class
 from tap_hubspot.tap import TapHubSpot
 
 SAMPLE_CONFIG = {
-    "start_date": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d"),
-    # TODO: Initialize minimal tap config
+    "access_token": "<replace your access token here>",
+    "campaigns_limit": 5,
+    "email_events_limit": 5,
 }
 
 
@@ -17,6 +18,3 @@ TestTapHubSpot = get_tap_test_class(
     tap_class=TapHubSpot,
     config=SAMPLE_CONFIG,
 )
-
-
-# TODO: Create additional tests as appropriate for your tap.
