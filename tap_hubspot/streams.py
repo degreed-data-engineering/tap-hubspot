@@ -18,7 +18,7 @@ Usage:
 
         from . import streams
         
-        def discover_streams(self) -> list[client.GrafanaRestStream]:
+        def discover_streams(self) -> list[client.HubSpotStream]:
         '''Return a list of discovered streams.
 
         Returns:
@@ -31,14 +31,3 @@ Usage:
 This module ensures that all stream classes are easily accessible and well-organized,
 promoting code reusability and maintainability.
 """
-
-from tap_hubspot.hubspot_streams.email_campaigns_stream import EamilCampaignsStream
-
-from tap_hubspot.hubspot_streams.email_campaign_deatails_stream import (
-    EamilCampaignDetailsStream,
-)
-from tap_hubspot.hubspot_streams.email_events_stream import EmailEventsStream
-
-from tap_hubspot.hubspot_streams.email_subscriptions_stream import (
-    EmailSubscriptionsStream,
-)
