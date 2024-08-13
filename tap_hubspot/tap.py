@@ -12,6 +12,7 @@ from singer_sdk import Tap
 from singer_sdk import typing as th
 from singer_sdk.streams import Stream
 
+from tap_hubspot.client import HubSpotStream
 from tap_hubspot.hubspot_streams.email_campaigns_stream import EamilCampaignsStream
 from tap_hubspot.hubspot_streams.email_campaign_deatails_stream import (
     EamilCampaignDetailsStream,
@@ -76,7 +77,7 @@ class TapHubSpot(Tap):
         ),
     ).to_dict()
 
-    def discover_streams(self) -> list[streams.HubSpotStream]:
+    def discover_streams(self) -> list[HubSpotStream]:
         """Return a list of discovered streams.
 
         Returns:

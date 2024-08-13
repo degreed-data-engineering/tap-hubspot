@@ -37,10 +37,6 @@ class EmailEventsStream(HubSpotStream):
     """
 
     name = "email_events"
-    path = (
-        f"/email/public/{API_VERSION}"
-        + "/events?campaignId={campaign_id}&appId={app_id}&limit=1000"
-    )
     primary_keys = ["id", "created"]
     replication_key = "created"
 
@@ -59,6 +55,80 @@ class EmailEventsStream(HubSpotStream):
             "created",
             th.IntegerType,
             description="Timestamp when the entity was created.",
+        ),
+    )
+
+    browser_schema = th.ObjectType(
+        th.Property(
+            "name",
+            th.StringType,
+            description="The name of the browser, e.g., 'Firefox 91.0'.",
+        ),
+        th.Property(
+            "family",
+            th.StringType,
+            description="The family of the browser, e.g., 'Firefox'.",
+        ),
+        th.Property(
+            "producer",
+            th.StringType,
+            description="The producer of the browser, e.g., 'Mozilla Foundation'.",
+        ),
+        th.Property(
+            "producerUrl",
+            th.StringType,
+            description="The URL of the producer's website.",
+        ),
+        th.Property(
+            "type",
+            th.StringType,
+            description="The type of software, e.g., 'Browser'.",
+        ),
+        th.Property(
+            "url",
+            th.StringType,
+            description="The URL of the browser's website.",
+        ),
+        th.Property(
+            "version",
+            th.ArrayType(th.StringType),
+            description="An array of version strings for the browser.",
+        ),
+    )
+
+    legal_basis_schema = th.ObjectType(
+        th.Property(
+            "legalBasisType",
+            th.StringType,
+            description="The type of legal basis for the subscription.",
+        ),
+        th.Property(
+            "legalBasisExplanation",
+            th.StringType,
+            description="Explanation of the legal basis.",
+        ),
+        th.Property(
+            "optState",
+            th.StringType,
+            description="The state of the opt-in/opt-out preference.",
+        ),
+    )
+
+    subscription_schema = th.ObjectType(
+        th.Property(
+            "id",
+            th.IntegerType,
+            description="Unique identifier for the subscription.",
+        ),
+        th.Property(
+            "status",
+            th.StringType,
+            description="Current status of the subscription.",
+        ),
+        th.Property(
+            "legalBasisChange",
+            legal_basis_schema,
+            description="Legal basis information related to the subscription.",
         ),
     )
 
@@ -99,6 +169,21 @@ class EmailEventsStream(HubSpotStream):
             description="Details about the entity that sent the email.",
         ),
         th.Property(
+            "bcc",
+            th.ArrayType(th.StringType),
+            description="Email bcc",
+        ),
+        th.Property(
+            "cc",
+            th.ArrayType(th.StringType),
+            description="Email cc",
+        ),
+        th.Property(
+            "replyTo",
+            th.ArrayType(th.StringType),
+            description="Email reply to",
+        ),
+        th.Property(
             "smtpId",
             th.StringType,
             description="SMTP ID associated with the email event, if available.",
@@ -127,6 +212,169 @@ class EmailEventsStream(HubSpotStream):
             "emailCampaignGroupId",
             th.IntegerType,
             description="HubSpot email campaign group ID associated with the email event.",
+        ),
+        th.Property(
+            "browser",
+            browser_schema,
+            description="Browser data",
+        ),
+        th.Property(
+            "category",
+            th.StringType,
+            description="Email event category.",
+        ),
+        th.Property(
+            "causedBy",
+            th.ObjectType(
+                th.Property(
+                    "id",
+                    th.StringType,
+                    description="Caused by id.",
+                ),
+                th.Property(
+                    "created",
+                    th.IntegerType,
+                    description="Timestamp when the event was created.",
+                ),
+            ),
+            description="Information about the event that caused the action.",
+        ),
+        th.Property(
+            "deviceType",
+            th.StringType,
+            description="Device type such as computer etc...",
+        ),
+        th.Property(
+            "dropMessage",
+            th.StringType,
+            description="Drop message.",
+        ),
+        th.Property(
+            "dropReason",
+            th.StringType,
+            description="Drop reason.",
+        ),
+        th.Property(
+            "duration",
+            th.IntegerType,
+            description="Duration.",
+        ),
+        th.Property(
+            "filteredEvent",
+            th.BooleanType,
+            description="Filtered event or not.",
+        ),
+        th.Property(
+            "from",
+            th.StringType,
+            description="From email address.",
+        ),
+        th.Property(
+            "linkId",
+            th.IntegerType,
+            description="Unique identifier for the linked entity.",
+        ),
+        th.Property(
+            "location",
+            th.ObjectType(
+                th.Property(
+                    "country",
+                    th.StringType,
+                    description="The country of the location.",
+                ),
+                th.Property(
+                    "state",
+                    th.StringType,
+                    description="The state of the location.",
+                ),
+                th.Property(
+                    "city",
+                    th.StringType,
+                    description="The city of the location.",
+                ),
+                th.Property(
+                    "zipcode",
+                    th.StringType,
+                    description="The postal code of the location.",
+                ),
+                th.Property(
+                    "latitude",
+                    th.NumberType,
+                    description="The latitude of the location.",
+                ),
+                th.Property(
+                    "longitude",
+                    th.NumberType,
+                    description="The longitude of the location.",
+                ),
+            ),
+            description="Details about the location.",
+        ),
+        th.Property(
+            "obsoletedBy",
+            th.ObjectType(
+                th.Property(
+                    "id",
+                    th.StringType,
+                    description="Unique identifier for the entity that obsoletes another entity.",
+                ),
+                th.Property(
+                    "created",
+                    th.IntegerType,
+                    description="Timestamp when the entity was created.",
+                ),
+            ),
+            description="Information about the entity that obsoletes another entity.",
+        ),
+        th.Property(
+            "referer",
+            th.StringType,
+            description="Referer.",
+        ),
+        th.Property(
+            "source",
+            th.StringType,
+            description="Source.",
+        ),
+        th.Property(
+            "sourceId",
+            th.StringType,
+            description="Source Id.",
+        ),
+        th.Property(
+            "status",
+            th.StringType,
+            description="Status number such as 550 etc...",
+        ),
+        th.Property(
+            "subject",
+            th.StringType,
+            description="Email event subject.",
+        ),
+        th.Property(
+            "subscriptions",
+            th.ArrayType(subscription_schema),
+            description="List of subscriptions associated with the entity.",
+        ),
+        th.Property(
+            "suppressedMessage",
+            th.StringType,
+            description="Suppressed email message.",
+        ),
+        th.Property(
+            "suppressedReason",
+            th.StringType,
+            description="Suppressed email reason.",
+        ),
+        th.Property(
+            "url",
+            th.StringType,
+            description="URL.",
+        ),
+        th.Property(
+            "userAgent",
+            th.StringType,
+            description="User agent.",
         ),
     ).to_dict()
 
@@ -183,9 +431,7 @@ class EmailEventsStream(HubSpotStream):
                     has_more = result.get("hasMore", False)
                     offset = result.get("offset", None)
                     if not has_more or offset is None:
-                        self.logger.info(
-                            f"Completed fetching event details for campaignId={campaign_detail['campaign_id']}&appId={campaign_detail['app_id']}&offset={offset}"
-                        )
+                        # Completed fetching event details for the given campaign_id and app_id
                         break
                     parsed_url = urlparse(url)
                     query_params = parse_qs(parsed_url.query)
@@ -199,8 +445,7 @@ class EmailEventsStream(HubSpotStream):
                     url = parsed_url._replace(query=new_query).geturl()
             except ClientResponseError as e:
                 if e.status == 429:
-                    wait_time = 12  # retry delay in seconds
-                    self.logger.info(f"Rate limit exceeded. Retrying...")
+                    wait_time = 11  # retry delay in seconds
                     await asyncio.sleep(wait_time)
                     # self.failed_urls.append(campaign_detail)
                     await self.fetch_data(session, campaign_detail)
@@ -214,12 +459,21 @@ class EmailEventsStream(HubSpotStream):
         campign_details_sublists = [
             campaign_details[i : i + 100] for i in range(0, len(campaign_details), 100)
         ]
-        for campign_details_sublist in campign_details_sublists:
+        total_no_of_batches = len(campign_details_sublists)
+        for index, campign_details_sublist in enumerate(campign_details_sublists):
             async_tasks = [
                 self.fetch_data(session, campaign_deails)
                 for campaign_deails in campign_details_sublist
             ]
             result = await asyncio.gather(*async_tasks)
+            if (index + 1) < total_no_of_batches:
+                self.logger.info(
+                    f"{index + 1} of {total_no_of_batches} {self.name} batches is completed. Processing batch {index + 2} now"
+                )
+            else:
+                self.logger.info(
+                    f"{total_no_of_batches} of {total_no_of_batches} {self.name} batches are processed successfully"
+                )
             results.extend(result)
         return results
 
@@ -232,13 +486,20 @@ class EmailEventsStream(HubSpotStream):
             responses = await self.get_api_response(session, context)
         return responses
 
+    async def get_records_async(self, context: dict | None) -> list[dict[str, Any]]:
+        async with aiohttp.ClientSession(
+            headers=self.authenticator.auth_headers
+        ) as session:
+            responses = await self.get_api_response(session, context)
+            return responses
+
     def get_records(self, context: dict | None) -> Iterable[dict[str, Any]]:
-        loop = asyncio.get_event_loop()
-        session = aiohttp.ClientSession(headers=self.authenticator.auth_headers)
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         try:
-            responses = loop.run_until_complete(self.get_api_response(session, context))
+            # Run the asynchronous function and get the responses
+            responses = loop.run_until_complete(self.get_records_async(context))
         finally:
-            loop.run_until_complete(session.close())
             loop.close()
 
         total = 0
