@@ -423,9 +423,6 @@ class EmailEventsStream(HubSpotStream):
                         and self.result_count >= email_events_limit
                     ):
                         self.stop_event.set()
-                        self.logger.info(
-                            f"Result limit of {email_events_limit} reached. Stopping all tasks."
-                        )
                         break
                     results.append(result)
                     has_more = result.get("hasMore", False)
