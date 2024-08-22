@@ -33,9 +33,19 @@ To add the `tap-hubspot` to an existing Meltano project, follow these steps:
           namespace: tap_hubspot
           pip_url: git+https://github.com/degreed-data-engineering/tap-hubspot
           config:
-            start_date: "2020-03-17T00:00:00Z"
             access_token: <Access token for HubSpot API service>
             api_base_url: <Base url for the HubSpot API service>
+            campaigns_limit: <Used for testing purpose to limit the number of campaign ids. Do  not use this in production>
+            email_events_limit: Used to debug the extractor by limiting the number of campaign
+              email events. Do not use this in production.>
+            email_events_start_timestamp: Only return events which occurred at or after the given timestamp (in milliseconds since epoch). 
+              After the initial run, this setting is not applicable in real-time runs if Meltano state is used.
+              Can be used to load past date's data in combination with email_events_end_timestamp (Use different Meltano state id  from prod to run against past dates).
+            email_events_end_timestamp: Only return events which occurred at or before the given timestamp (in milliseconds since epoch).
+              Should be commented in real-time runs. Used only to load past date's data in combination with email_events_start_timestamp.
+            email_events_type: Only return events of the specified type (case-sensitive).
+            email_events_exclude_filtered_events: Only return events that have not been filtered out due to custom filtering settings. 
+              The default value is false.            
    ```
 
 3. **Configure the Tap-HubSpot extractor**:
@@ -47,7 +57,7 @@ To add the `tap-hubspot` to an existing Meltano project, follow these steps:
    Or, you can set the config environment variable in your .env file. For example:
    ```bash
     TAP_HUBSPOT_ACCESS_TOKEN="your_access_token_here"
-    TAP_HUBSPOT_API_BASE_URL="http://api.hubapi.com"
+    TAP_HUBSPOT_API_BASE_URL="https://api.hubapi.com"
    ```
 
 4. **Test the Tap-HubSpot extractor configuration**:
@@ -81,21 +91,20 @@ pipx install git+https://github.com/degreed-data-engineering/tap-hubspot.git
   - `access_token`: This is your HubSpot access token. 
 
 Other configurations are
-  - `api_base_url`: Base url for the HubSpot API service. Default value is `http://api.hubapi.com`
-  - `start_date`: Starting point for data extraction from a source
+  - `api_base_url`: Base url for the HubSpot API service. Default value is `https://api.hubapi.com`
 
-You can set this API key in your environment variables:
+You can set this API key in your environment variables also:
 
 ```bash
 export TAP_HUBSPOT_ACCESS_TOKEN=your_access_token_here
-export TAP_HUBSPOT_API_BASE_URL="http://api.hubapi.com"
+export TAP_HUBSPOT_API_BASE_URL="https://api.hubapi.com"
 ```
 
 Alternatively, you can create a .env file in your project directory and add the following line:
 
 ```bash
 TAP_HUBSPOT_ACCESS_TOKEN=your_access_token_here
-TAP_HUBSPOT_API_BASE_URL="http://api.hubapi.com"
+TAP_HUBSPOT_API_BASE_URL="https://api.hubapi.com"
 ```
 
 ### Configure using environment variables
@@ -118,11 +127,6 @@ Pre-Requisite tor run above command
 ```bash
   pipx install git+https://github.com/degreed-data-engineering/tap-hubspot.git
   ```
-
-<!-- ### Source Authentication and Authorization -->
-<!--
-Developer TODO: If your tap requires special access on the source system, or any special authentication requirements, provide those here.
--->
 
 ## Usage
 
@@ -191,12 +195,6 @@ poetry run tap-hubspot --help
 
 _**Note:** This tap will work in any Singer environment and does not require Meltano.
 Examples here are for convenience and to streamline end-to-end orchestration scenarios._
-
-<!--
-Developer TODO:
-Your project comes with a custom `meltano.yml` project file already created. Open the `meltano.yml` and follow any "TODO" items listed in
-the file.
--->
 
 Next, install Meltano (if you haven't already) and any needed plugins:
 

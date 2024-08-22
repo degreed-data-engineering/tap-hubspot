@@ -1,7 +1,7 @@
 """
     A specialized class for interacting with the HubSpot REST API, inheriting from Meltano RESTStream.
 
-    This class is designed to facilitate interaction with the Grafana REST API, leveraging
+    This class is designed to facilitate interaction with the HubSpot REST API, leveraging
     the functionality provided by the `RESTStream` base class. 
 
 """
@@ -13,7 +13,7 @@ import requests
 from typing import Any, Callable, Iterable
 from singer_sdk.authenticators import BearerTokenAuthenticator
 from singer_sdk.helpers.jsonpath import extract_jsonpath
-from singer_sdk.pagination import BaseAPIPaginator, BaseHATEOASPaginator  # noqa: TCH002
+from singer_sdk.pagination import BaseAPIPaginator, BaseHATEOASPaginator
 from singer_sdk.streams import RESTStream
 
 
@@ -38,7 +38,7 @@ class HubSpotStream(RESTStream):
     records_jsonpath = "$[*]"
 
     # Set this value or override `get_new_paginator`.
-    next_page_token_jsonpath = "$.next_page"  # noqa: S105
+    next_page_token_jsonpath = "$.next_page"
 
     @property
     def authenticator(self) -> BearerTokenAuthenticator:
@@ -62,8 +62,6 @@ class HubSpotStream(RESTStream):
         headers = {}
         if "user_agent" in self.config:
             headers["User-Agent"] = self.config.get("user_agent")
-        # If not using an authenticator, you may also provide inline auth headers:
-        # headers["Private-Token"] = self.config.get("auth_token")  # noqa: ERA001
         return headers
 
     def get_new_paginator(self) -> BaseAPIPaginator:
@@ -79,13 +77,12 @@ class HubSpotStream(RESTStream):
         Returns:
             A pagination helper instance.
         """
-        # return super().get_new_paginator()
         return HubSpotPaginator()
 
     def get_url_params(
         self,
-        context: dict | None,  # noqa: ARG002
-        next_page_token: Any | None,  # noqa: ANN401
+        context: dict | None,
+        next_page_token: Any | None,
     ) -> dict[str, Any]:
         """Return a dictionary of values to be used in URL parameterization.
 
@@ -97,7 +94,6 @@ class HubSpotStream(RESTStream):
             A dictionary of URL query parameters.
         """
         params: dict = {}
-        params["limit"] = 1000
         if next_page_token:
             params["offset"] = next_page_token.path
         if self.replication_key:
@@ -121,7 +117,6 @@ class HubSpotStream(RESTStream):
         Returns:
             A dictionary with the JSON body for a POST requests.
         """
-        # TODO: Delete this method if no payload is required. (Most REST APIs.)
         return None
 
     def parse_response(self, response: requests.Response) -> Iterable[dict]:
@@ -133,13 +128,12 @@ class HubSpotStream(RESTStream):
         Yields:
             Each record from the source.
         """
-        # TODO: Parse response body and return a set of records.
         yield from extract_jsonpath(self.records_jsonpath, input=response.json())
 
     def post_process(
         self,
         row: dict,
-        context: dict | None = None,  # noqa: ARG002
+        context: dict | None = None,
     ) -> dict | None:
         """As needed, append or transform raw data to match expected structure.
 
@@ -150,5 +144,4 @@ class HubSpotStream(RESTStream):
         Returns:
             The updated record dictionary, or ``None`` to skip the record.
         """
-        # TODO: Delete this method if not needed.
         return row

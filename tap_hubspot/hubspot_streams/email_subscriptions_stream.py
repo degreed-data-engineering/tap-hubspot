@@ -34,11 +34,7 @@ class EmailSubscriptionsStream(HubSpotStream):
     """
 
     name = "email_subscriptions"
-    path = f"/email/public/{API_VERSION}" + "/subscriptions/{recipient_email_id}"
-    # parent_stream_type = EmailEventsStream
-    primary_keys = ["email"]
     records_jsonpath = "$[*]"
-    state_partitioning_keys = ["recipient"]
 
     from singer_sdk import typing as th
 
@@ -59,7 +55,19 @@ class EmailSubscriptionsStream(HubSpotStream):
             description="Indicates whether the email is subscribed.",
         ),
         th.Property(
-            "optState", th.StringType, description="The opt-in state of the email."
+            "optState",
+            th.StringType,
+            description="The opt-in state of the email.",
+        ),
+        th.Property(
+            "legalBasis",
+            th.StringType,
+            description="The legal basis for the subscription.",
+        ),
+        th.Property(
+            "legalBasisExplanation",
+            th.StringType,
+            description="Detailed explanation of the legal basis for the subscription.",
         ),
     )
 
@@ -100,6 +108,16 @@ class EmailSubscriptionsStream(HubSpotStream):
             description="A list of subscription statuses for the email address.",
         ),
         th.Property(
+            "portalSubscriptionLegalBasis",
+            th.StringType,
+            description="Portal subscription leagal basis.",
+        ),
+        th.Property(
+            "portalSubscriptionLegalBasisExplanation",
+            th.StringType,
+            description="Portal subscription leagal basis explanation.",
+        ),
+        th.Property(
             "status",
             th.StringType,
             description="The overall subscription status of the email address.",
@@ -114,8 +132,7 @@ class EmailSubscriptionsStream(HubSpotStream):
                     return await response.json()
             except ClientResponseError as e:
                 if e.status == 429:
-                    wait_time = 12  # retry delay in seconds
-                    self.logger.info(f"Rate limit exceeded. Retrying...")
+                    wait_time = 11  # retry delay in seconds
                     await asyncio.sleep(wait_time)
                     await self.fetch_data(session, recipient_email)
 
@@ -124,14 +141,32 @@ class EmailSubscriptionsStream(HubSpotStream):
         recipient_emails_sublists = [
             recipient_emails[i : i + 100] for i in range(0, len(recipient_emails), 100)
         ]
-        for recipient_emails_sublist in recipient_emails_sublists:
+        total_no_of_batches = len(recipient_emails_sublists)
+        for index, recipient_emails_sublist in enumerate(recipient_emails_sublists):
             async_tasks = [
                 self.fetch_data(session, recipient_email)
                 for recipient_email in recipient_emails_sublist
             ]
             result = await asyncio.gather(*async_tasks)
+            if (index + 1) < total_no_of_batches:
+                self.logger.info(
+                    f"{index + 1} of {total_no_of_batches} {self.name} batches is completed. Processing batch {index + 2} now"
+                )
+            else:
+                self.logger.info(
+                    f"{total_no_of_batches} of {total_no_of_batches} {self.name} batches are processed successfully"
+                )
             results.extend(result)
         return results
+
+    async def get_records_async(
+        self, context: dict | None, unique_recipient_emails
+    ) -> list[dict[str, Any]]:
+        async with aiohttp.ClientSession(
+            headers=self.authenticator.auth_headers
+        ) as session:
+            responses = await self.get_api_response(session, unique_recipient_emails)
+            return responses
 
     def get_records(self, context: dict | None) -> Iterable[dict[str, Any]]:
         recipient_emails = EmailEventsStream.recipient_email_context
@@ -141,18 +176,14 @@ class EmailSubscriptionsStream(HubSpotStream):
         )
 
         if unique_recipient_emails:
-
-            async def fetch_records():
-                async with aiohttp.ClientSession(
-                    headers=self.authenticator.auth_headers
-                ) as session:
-                    return await self.get_api_response(session, unique_recipient_emails)
-
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                responses = loop.run_until_complete(fetch_records())
-            else:
-                responses = asyncio.run(fetch_records())
-
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                # Run the asynchronous function and get the responses
+                responses = loop.run_until_complete(
+                    self.get_records_async(context, unique_recipient_emails)
+                )
+            finally:
+                loop.close()
             for response in responses:
                 yield response
