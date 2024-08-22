@@ -57,7 +57,7 @@ To add the `tap-hubspot` to an existing Meltano project, follow these steps:
    Or, you can set the config environment variable in your .env file. For example:
    ```bash
     TAP_HUBSPOT_ACCESS_TOKEN="your_access_token_here"
-    TAP_HUBSPOT_API_BASE_URL="http://api.hubapi.com"
+    TAP_HUBSPOT_API_BASE_URL="https://api.hubapi.com"
    ```
 
 4. **Test the Tap-HubSpot extractor configuration**:
@@ -91,20 +91,20 @@ pipx install git+https://github.com/degreed-data-engineering/tap-hubspot.git
   - `access_token`: This is your HubSpot access token. 
 
 Other configurations are
-  - `api_base_url`: Base url for the HubSpot API service. Default value is `http://api.hubapi.com`
+  - `api_base_url`: Base url for the HubSpot API service. Default value is `https://api.hubapi.com`
 
 You can set this API key in your environment variables also:
 
 ```bash
 export TAP_HUBSPOT_ACCESS_TOKEN=your_access_token_here
-export TAP_HUBSPOT_API_BASE_URL="http://api.hubapi.com"
+export TAP_HUBSPOT_API_BASE_URL="https://api.hubapi.com"
 ```
 
 Alternatively, you can create a .env file in your project directory and add the following line:
 
 ```bash
 TAP_HUBSPOT_ACCESS_TOKEN=your_access_token_here
-TAP_HUBSPOT_API_BASE_URL="http://api.hubapi.com"
+TAP_HUBSPOT_API_BASE_URL="https://api.hubapi.com"
 ```
 
 ### Configure using environment variables
