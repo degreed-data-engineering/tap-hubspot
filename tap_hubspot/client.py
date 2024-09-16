@@ -16,16 +16,13 @@ from singer_sdk.helpers.jsonpath import extract_jsonpath
 from singer_sdk.pagination import BaseAPIPaginator, BaseHATEOASPaginator
 from singer_sdk.streams import RESTStream
 
-
 _Auth = Callable[[requests.PreparedRequest], requests.PreparedRequest]
-
 
 class HubSpotPaginator(BaseHATEOASPaginator):
     def get_next_url(self, response):
         data = response.json()
         if data.get("hasMore"):
             return data.get("offset")
-
 
 class HubSpotStream(RESTStream):
     """HubSpot stream class."""

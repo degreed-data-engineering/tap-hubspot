@@ -27,9 +27,7 @@ from tap_hubspot.hubspot_streams.email_campaign_deatails_stream import (
     EamilCampaignsStream,
 )
 
-
 API_VERSION = "v1"
-
 
 class EmailEventsStream(HubSpotStream):
     """

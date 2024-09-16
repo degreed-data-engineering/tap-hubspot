@@ -22,13 +22,11 @@ from tap_hubspot.hubspot_streams.email_subscriptions_stream import (
     EmailSubscriptionsStream,
 )
 
-
 class TapHubSpot(Tap):
     """HubSpot tap class."""
 
     name = "tap-hubspot"
 
-    # TODO: Update this section with the actual config values you expect:
     config_jsonschema = th.PropertiesList(
         th.Property(
             "access_token",
