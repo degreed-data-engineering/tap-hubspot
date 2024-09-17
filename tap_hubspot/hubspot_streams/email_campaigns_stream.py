@@ -43,7 +43,7 @@ class EamilCampaignsStream(HubSpotStream):
         campaigns_limit = int(self.config.get("campaigns_limit", -1))
         record_count = 0
         for record in super().get_records(context):
-            if record_count != -1 and campaigns_limit == record_count:
+            if campaigns_limit != -1 and campaigns_limit == record_count:
                 break
             record_count += 1
             self.campaign_id_contexts.append(
