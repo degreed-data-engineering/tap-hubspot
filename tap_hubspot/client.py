@@ -8,7 +8,6 @@
 
 from __future__ import annotations
 
-import os
 import requests
 
 from typing import Any, Callable, Iterable
@@ -31,9 +30,7 @@ class HubSpotStream(RESTStream):
     @property
     def url_base(self) -> str:
         """Return the API URL root, configurable via tap settings."""
-        api_base_url = self.config.get('api_base_url') or os.getenv('TAP_HUBSPOT_API_BASE_URL')
-        api_base_url = str(api_base_url) if api_base_url is not None else self.config['api_base_url']
-        return api_base_url
+        return self.config.get("api_base_url", "")
 
     records_jsonpath = "$[*]"
 
