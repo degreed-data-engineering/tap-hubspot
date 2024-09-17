@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import asyncio
 import aiohttp
+import os
 
 from urllib.parse import quote
 from typing import Any, Iterable
@@ -376,11 +377,41 @@ class EmailEventsStream(HubSpotStream):
         ),
     ).to_dict()
 
+    def email_events_limit(self) -> str:
+        """Return the API URL root, configurable via tap settings."""
+        email_events_limit = self.config.get('email_events_limit') or os.getenv('TAP_HUBSPOT_EMAIL_EVENTS_LIMIT')
+        email_events_limit = str(email_events_limit) if email_events_limit is not None else self.config['email_events_limit']
+        return email_events_limit
+
+    def email_events_start_timestamp(self) -> str:
+        """Return the API URL root, configurable via tap settings."""
+        email_events_start_timestamp = self.config.get('email_events_start_timestamp') or os.getenv('TAP_HUBSPOT_EMAIL_EVENTS_START_TIMESTAMP')
+        email_events_start_timestamp = str(email_events_start_timestamp) if email_events_start_timestamp is not None else self.config['email_events_start_timestamp']
+        return email_events_start_timestamp
+
+    def email_events_end_timestamp(self) -> str:
+        """Return the API URL root, configurable via tap settings."""
+        email_events_end_timestamp = self.config.get('email_events_end_timestamp') or os.getenv('TAP_HUBSPOT_EMAIL_EVENTS_END_TIMESTAMP')
+        email_events_end_timestamp = str(email_events_end_timestamp) if email_events_end_timestamp is not None else self.config['email_events_end_timestamp']
+        return email_events_end_timestamp
+
+    def email_events_type(self) -> str:
+        """Return the API URL root, configurable via tap settings."""
+        email_events_type = self.config.get('email_events_type') or os.getenv('TAP_HUBSPOT_EMAIL_EVENTS_TYPE')
+        email_events_type = str(email_events_type) if email_events_type is not None else self.config['email_events_type']
+        return email_events_type
+
+    def email_events_exclude_filtered_events(self) -> str:
+        """Return the API URL root, configurable via tap settings."""
+        email_events_exclude_filtered_events = self.config.get('email_events_exclude_filtered_events') or os.getenv('TAP_HUBSPOT_EMAIL_EVENTS_EXCLUDE_FILTERED_EVENTS')
+        email_events_exclude_filtered_events = str(email_events_exclude_filtered_events) if email_events_exclude_filtered_events is not None else self.config['email_events_exclude_filtered_events']
+        return email_events_exclude_filtered_events
+
     def generate_email_event_url(self) -> str:
-        start_timestamp = self.config.get("email_events_start_timestamp", None)
-        end_timesamp = self.config.get("email_events_end_timestamp", None)
-        event_types = self.config.get("email_events_type", None)
-        filtered_events = self.config.get("email_events_exclude_filtered_events", False)
+        start_timestamp = self.email_events_start_timestamp()
+        end_timesamp = self.email_events_end_timestamp()
+        event_types = self.email_events_type()
+        filtered_events = self.email_events_exclude_filtered_events()
         replication_key_value = self.stream_state.get("replication_key_value", None)
 
         query_string_params = []
@@ -406,7 +437,7 @@ class EmailEventsStream(HubSpotStream):
         url_with_filter = self.generate_email_event_url()
         url = f"{base_url}{url_with_filter}&campaignId={campaign_detail['campaign_id']}&appId={campaign_detail['app_id']}"
         results = []
-        email_events_limit = self.config.get("email_events_limit", -1)
+        email_events_limit = self.email_events_limit()
         while True:
             try:
                 async with session.get(url, raise_for_status=True) as response:
@@ -498,7 +529,7 @@ class EmailEventsStream(HubSpotStream):
             loop.close()
 
         total = 0
-        email_events_limit = self.config.get("email_events_limit", -1)
+        email_events_limit = self.email_events_limit()
         for response in responses:
             for item in response:
                 if "events" in item:

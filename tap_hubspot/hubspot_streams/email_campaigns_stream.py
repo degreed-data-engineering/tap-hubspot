@@ -16,9 +16,9 @@ from typing import Any, Iterable
 from singer_sdk import typing as th
 from tap_hubspot.client import HubSpotStream
 
+import os
 
 API_VERSION = "v1"
-
 
 class EamilCampaignsStream(HubSpotStream):
     """
@@ -41,8 +41,14 @@ class EamilCampaignsStream(HubSpotStream):
 
     campaign_id_contexts = []
 
+    def campaigns_limit(self) -> str:
+        """Return the API URL root, configurable via tap settings."""
+        campaigns_limit = self.config.get('campaigns_limit') or os.getenv('TAP_HUBSPOT_CAMPAIGNS_LIMIT')
+        campaigns_limit = str(campaigns_limit) if campaigns_limit is not None else self.config['campaigns_limit']
+        return campaigns_limit
+
     def get_records(self, context: dict | None) -> Iterable[dict[str, Any]]:
-        campaigns_limit = self.config.get("campaigns_limit", -1)
+        campaigns_limit = self.campaigns_limit()
         record_count = 0
         for record in super().get_records(context):
             if record_count != -1 and campaigns_limit == record_count:
