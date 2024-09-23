@@ -43,24 +43,24 @@ class TapHubSpot(Tap):
         ),
         th.Property(
             "campaigns_limit",
-            th.IntegerType,
-            default=-1,
+            th.StringType,
+            default="-1",
             description="Used to limit how many records to be returned. -1 to get all records",
         ),
         th.Property(
             "email_events_limit",
-            th.IntegerType,
-            default=-1,
+            th.StringType,
+            default="-1",
             description="Used to limit how many records to be returned. -1 to get all records",
         ),
         th.Property(
             "email_events_start_timestamp",
-            th.IntegerType,
+            th.StringType,
             description="Only return events which occurred at or after the given timestamp (in milliseconds since epoch)",
         ),
         th.Property(
             "email_events_end_timestamp",
-            th.IntegerType,
+            th.StringType,
             description="Only return events which occurred at or before the given timestamp (in milliseconds since epoch)",
         ),
         th.Property(

@@ -377,8 +377,8 @@ class EmailEventsStream(HubSpotStream):
     ).to_dict()
 
     def generate_email_event_url(self) -> str:
-        start_timestamp = self.config.get("email_events_start_timestamp", None)
-        end_timesamp = self.config.get("email_events_end_timestamp", None)
+        start_timestamp = int(self.config.get("email_events_start_timestamp", 0))
+        end_timestamp = int(self.config.get("email_events_end_timestamp", 0))
         event_types = self.config.get("email_events_type", None)
         filtered_events = self.config.get("email_events_exclude_filtered_events", False)
         if isinstance(filtered_events, str):
@@ -389,11 +389,11 @@ class EmailEventsStream(HubSpotStream):
 
         if self.replication_key and replication_key_value:
             query_string_params.append(f"startTimestamp={replication_key_value}")
-        elif start_timestamp:
+        elif start_timestamp != 0:
             query_string_params.append(f"startTimestamp={start_timestamp}")
 
-        if end_timesamp:
-            query_string_params.append(f"endTimestamp={end_timesamp}")
+        if end_timestamp != 0:
+            query_string_params.append(f"endTimestamp={end_timestamp}")
 
         if event_types:
             query_string_params.append(f"eventType={event_types}")
