@@ -8,8 +8,8 @@ from tap_hubspot.tap import TapHubSpot
 
 SAMPLE_CONFIG = {
     "access_token": "<replace your access token here>",
-    "campaigns_limit": 5,
-    "email_events_limit": 5,
+    "campaigns_limit": "5",
+    "email_events_limit": "5",
 }
 
 
