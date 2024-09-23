@@ -24,9 +24,7 @@ from tap_hubspot.hubspot_streams.email_events_stream import (
     EmailEventsStream,
 )
 
-
 API_VERSION = "v1"
-
 
 class EmailSubscriptionsStream(HubSpotStream):
     """
@@ -35,8 +33,6 @@ class EmailSubscriptionsStream(HubSpotStream):
 
     name = "email_subscriptions"
     records_jsonpath = "$[*]"
-
-    from singer_sdk import typing as th
 
     subscription_status_schema = th.ObjectType(
         th.Property(

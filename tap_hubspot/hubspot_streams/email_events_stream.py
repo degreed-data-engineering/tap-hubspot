@@ -27,9 +27,7 @@ from tap_hubspot.hubspot_streams.email_campaign_deatails_stream import (
     EamilCampaignsStream,
 )
 
-
 API_VERSION = "v1"
-
 
 class EmailEventsStream(HubSpotStream):
     """
@@ -383,6 +381,8 @@ class EmailEventsStream(HubSpotStream):
         end_timesamp = self.config.get("email_events_end_timestamp", None)
         event_types = self.config.get("email_events_type", None)
         filtered_events = self.config.get("email_events_exclude_filtered_events", False)
+        if isinstance(filtered_events, str):
+            filtered_events = filtered_events.lower() in ["true", "1", "yes"]
         replication_key_value = self.stream_state.get("replication_key_value", None)
 
         query_string_params = []
@@ -408,7 +408,7 @@ class EmailEventsStream(HubSpotStream):
         url_with_filter = self.generate_email_event_url()
         url = f"{base_url}{url_with_filter}&campaignId={campaign_detail['campaign_id']}&appId={campaign_detail['app_id']}"
         results = []
-        email_events_limit = self.config.get("email_events_limit", -1)
+        email_events_limit = int(self.config.get("email_events_limit", -1))
         while True:
             try:
                 async with session.get(url, raise_for_status=True) as response:
@@ -500,7 +500,7 @@ class EmailEventsStream(HubSpotStream):
             loop.close()
 
         total = 0
-        email_events_limit = self.config.get("email_events_limit", -1)
+        email_events_limit = int(self.config.get("email_events_limit", -1))
         for response in responses:
             for item in response:
                 if "events" in item:
