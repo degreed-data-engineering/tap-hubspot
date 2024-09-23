@@ -377,10 +377,10 @@ class EmailEventsStream(HubSpotStream):
     ).to_dict()
 
     def generate_email_event_url(self) -> str:
-        start_timestamp = int(float(self.config.get("email_events_start_timestamp", 0)))
-        end_timestamp = int(float(self.config.get("email_events_end_timestamp", 0)))
-        event_types = self.config.get("email_events_type", None)
-        filtered_events = bool(self.config.get("email_events_exclude_filtered_events", False))
+        start_timestamp = int(float(self.config.get("email_events_start_timestamp", 0))) if self.config.get("email_events_start_timestamp") != '' else 0
+        end_timestamp = int(float(self.config.get("email_events_end_timestamp", 0))) if self.config.get("email_events_end_timestamp") != '' else 0
+        event_types = self.config.get("email_events_type", None) if self.config.get("email_events_type") != '' else None
+        filtered_events = bool(self.config.get("email_events_exclude_filtered_events", False)) if self.config.get("email_events_exclude_filtered_events") != '' else False
         if isinstance(filtered_events, str):
             filtered_events = filtered_events.lower() in ["true", "1", "yes"]
         replication_key_value = self.stream_state.get("replication_key_value", None)
@@ -408,7 +408,7 @@ class EmailEventsStream(HubSpotStream):
         url_with_filter = self.generate_email_event_url()
         url = f"{base_url}{url_with_filter}&campaignId={campaign_detail['campaign_id']}&appId={campaign_detail['app_id']}"
         results = []
-        email_events_limit = int(float(self.config.get("email_events_limit", -1)))
+        email_events_limit = int(float(self.config.get("email_events_limit", -1))) if self.config.get("email_events_limit") != '' else -1
         while True:
             try:
                 async with session.get(url, raise_for_status=True) as response:
@@ -500,7 +500,7 @@ class EmailEventsStream(HubSpotStream):
             loop.close()
 
         total = 0
-        email_events_limit = int(float(self.config.get("email_events_limit", -1)))
+        email_events_limit = int(float(self.config.get("email_events_limit", -1))) if self.config.get("email_events_limit") != '' else -1
         for response in responses:
             for item in response:
                 if "events" in item:
