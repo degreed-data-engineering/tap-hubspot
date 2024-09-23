@@ -380,7 +380,7 @@ class EmailEventsStream(HubSpotStream):
         start_timestamp = int(float(self.config.get("email_events_start_timestamp", 0)))
         end_timestamp = int(float(self.config.get("email_events_end_timestamp", 0)))
         event_types = self.config.get("email_events_type", None)
-        filtered_events = self.config.get("email_events_exclude_filtered_events", False)
+        filtered_events = bool(self.config.get("email_events_exclude_filtered_events", False))
         if isinstance(filtered_events, str):
             filtered_events = filtered_events.lower() in ["true", "1", "yes"]
         replication_key_value = self.stream_state.get("replication_key_value", None)

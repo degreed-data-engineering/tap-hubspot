@@ -48,7 +48,7 @@ plugins:
           kind: string
           description: Only return events of the specified type (case-sensitive).
         - name: email_events_exclude_filtered_events
-          kind: boolean
+          kind: string
           description:
             Only return events that have not been filtered out due to customer
             filtering settings. The default value is false.

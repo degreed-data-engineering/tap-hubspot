@@ -70,7 +70,7 @@ class TapHubSpot(Tap):
         ),
         th.Property(
             "email_events_exclude_filtered_events",
-            th.BooleanType,
+            th.StringType,
             description="Only return events that have not been filtered out due to customer filtering settings. The default value is false",
         ),
     ).to_dict()
