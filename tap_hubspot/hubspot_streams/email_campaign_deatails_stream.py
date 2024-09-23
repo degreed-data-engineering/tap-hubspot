@@ -33,7 +33,6 @@ class EamilCampaignDetailsStream(HubSpotStream):
         th.Property(
             "id",
             th.IntegerType,
-            required=True,
             description="Unique identifier for the campaign.",
         ),
         th.Property(
