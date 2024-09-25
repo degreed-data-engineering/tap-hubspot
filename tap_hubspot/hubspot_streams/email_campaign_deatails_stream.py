@@ -29,6 +29,7 @@ class EamilCampaignDetailsStream(HubSpotStream):
 
     name = "email_campaign_details"
     primary_keys = ["id"]
+    replication_key = "id"
 
     schema = th.PropertiesList(
         th.Property(
