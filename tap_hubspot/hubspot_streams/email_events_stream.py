@@ -35,7 +35,7 @@ class EmailEventsStream(HubSpotStream):
     """
 
     name = "email_events"
-    primary_keys = ["id", "created"]
+    primary_keys = ["id"]
     replication_key = "created"
 
     records_jsonpath = "$.events[:]"
