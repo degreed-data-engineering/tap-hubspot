@@ -387,10 +387,10 @@ class EmailEventsStream(HubSpotStream):
 
         query_string_params = []
 
-        if self.replication_key and replication_key_value:
-            query_string_params.append(f"startTimestamp={replication_key_value}")
-        elif start_timestamp != 0:
+        if start_timestamp != 0:
             query_string_params.append(f"startTimestamp={start_timestamp}")
+        elif self.replication_key and replication_key_value:
+            query_string_params.append(f"startTimestamp={replication_key_value}")
 
         if end_timestamp != 0:
             query_string_params.append(f"endTimestamp={end_timestamp}")

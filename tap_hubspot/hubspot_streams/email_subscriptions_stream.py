@@ -32,6 +32,8 @@ class EmailSubscriptionsStream(HubSpotStream):
     """
 
     name = "email_subscriptions"
+    primary_keys = ["email"]
+    replication_key = None
     records_jsonpath = "$[*]"
 
     subscription_status_schema = th.ObjectType(
