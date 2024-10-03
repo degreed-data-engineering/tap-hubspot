@@ -26,6 +26,7 @@ from tap_hubspot.hubspot_streams.email_events_stream import (
 
 API_VERSION = "v1"
 
+
 class EmailSubscriptionsStream(HubSpotStream):
     """
     Meltano stream class to get details about an email subscription details form HubSpot.

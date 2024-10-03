@@ -18,14 +18,15 @@ from tap_hubspot.client import HubSpotStream
 
 API_VERSION = "v1"
 
+
 class EamilCampaignsStream(HubSpotStream):
     """
     Meltano stream class to get details about email campaign ids and app ids form HubSpot.
     """
 
     name = "email_campaigns"
-    primary_keys = ["id"]
-    replication_key = "id"
+    primary_keys = ["id", "lastUpdatedTime"]
+    replication_key = "lastUpdatedTime"
     path = f"/email/public/{API_VERSION}/campaigns?limit=1000"
 
     records_jsonpath = "$.campaigns[:]"
@@ -41,7 +42,11 @@ class EamilCampaignsStream(HubSpotStream):
     campaign_id_contexts = []
 
     def get_records(self, context: dict | None) -> Iterable[dict[str, Any]]:
-        campaigns_limit = int(float(self.config.get("campaigns_limit", -1))) if self.config.get("campaigns_limit") != '' else -1
+        campaigns_limit = (
+            int(float(self.config.get("campaigns_limit", -1)))
+            if self.config.get("campaigns_limit") != ""
+            else -1
+        )
         record_count = 0
         for record in super().get_records(context):
             if campaigns_limit != -1 and campaigns_limit == record_count:
